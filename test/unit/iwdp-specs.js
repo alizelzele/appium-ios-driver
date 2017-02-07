@@ -23,7 +23,9 @@ describe.only('ios webkit debug proxy class', () => {
   });
 
   afterEach(async () => {
-    await iwdpInstance.stop();
+    try {
+      await iwdpInstance.stop();
+    } catch (ign) {}
   });
 
   it('should start ios-webkit-debug-proxy and have no connected devices', async function () {
@@ -40,5 +42,16 @@ describe.only('ios webkit debug proxy class', () => {
       done();
     });
     iwdpInstance.start();
+  });
+
+  it.only('should not start IWDP server if one is already started', async function(done){
+    // Copy the IWDP process and start it
+    let process = Object.assign(iwdpInstance.process);
+    await process.start();
+    iwdpInstance.on('failure', () => {
+      done();
+    });
+    iwdpInstance.start();
+
   });
 });
